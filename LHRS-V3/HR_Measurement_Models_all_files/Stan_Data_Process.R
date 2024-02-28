@@ -13,7 +13,8 @@
 
 # use
 rm(list=ls())
-setwd("~/HR_Validation/data")
+#setwd("~/HR_Validation/data")
+setwd("Data")
 
 #### THINGS TO FIX
 #### Update new data
@@ -282,23 +283,26 @@ data <- subset(data, !is.na(DISAP) | !is.na(KILL) | !is.na(TORT) | !is.na(POLPRI
 nrow(data)
 n <- nrow(data)
 
+# Creates UNIQUE OBSERVATIONS: country-year units.
 data$COW_YEAR <- paste(data$COW, data$YEAR, sep="-")
 
-
+# Creates ID variable for each of the unique country-year observations.
 id <- factor(data$COW_YEAR)
 id <- as.numeric(id)
-data$id <- id 
+data$id <- id               # `id` is unique country-year observation.
 
-prev_id <- numeric(length(id))
-for(ii in 1:length(id)){
-  tmp.year <- data$YEAR[which(ii == id) ]
-  tmp.COW <- data$COW[which(ii == id) ]
+prev_id <- numeric(length(id)) # Creates vector of same length as 'id' vector.
+
+# This for-loop just delineates where the first year is in the data (and lags other years).
+for(ii in 1:length(id)){ # Loops thru all elements in 'id' vector, which loops thru each unique observation.
+  tmp.year <- data$YEAR[which(ii == id) ] #Finds year in data for unique observation being looped.
+  tmp.COW <- data$COW[which(ii == id) ] #Finds unique country in data for unique observation being looped.
   
   if(any(((tmp.year-1) == data$YEAR) & (tmp.COW == data$COW))){
     prev_id[ii] <- id[((tmp.year-1) == data$YEAR) & (tmp.COW == data$COW)]
   
   } else {
-    prev_id[ii] <- 0
+      prev_id[ii] <- 0
   }
 
 }
